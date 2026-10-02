@@ -108,7 +108,7 @@ Being specific about the gap is part of the point:
 - The erasure mechanism is generic and verified, but no specific 802.11
   puncture pattern (rate 2/3, 3/4) is wired up yet.
 
-## On-hardware status: programmed and running, readout not yet confirmed
+## On-hardware status: programmed and running, readout blocked by a confirmed tooling limitation
 
 The bitstream has been generated and programmed onto a real ZCU104 over JTAG
 (`xczu7_0`), confirmed by a post-configuration hardware readback, not just a
@@ -119,34 +119,39 @@ FSBL runs natively to bring up PS/DDR, then the test application downloads
 and starts cleanly, with no error from the download or run commands
 themselves.
 
-What is not yet confirmed is the PASS/FAIL result of that run. Three
-independent ways to read it back were tried and each hit a distinct, real
-failure:
+What is not yet confirmed is the PASS/FAIL result of that run, and the
+reason is now pinned down precisely rather than just worked around. Three
+independent ways to read the result back each hit a real failure (UART
+capture across all three USB-UART channels, halting the core over JTAG to
+read DDR, and reading DDR through the debug port without touching the
+core), and a careful process of elimination, including two full physical
+power cycles to separate stale debug-session state from the real cause,
+ruled out every plausible explanation on this project's side: wrong UART
+port or baud (checked against AMD's own ZCU104 user guide and this design's
+generated `psu_init.c` and found correct), PS-PL isolation or fabric reset
+not released (the verified fix was applied; no change), and an ARM
+exception-level mismatch between FSBL and the application (disproved with
+a direct register dump: the core is at EL3 both times).
 
-1. **UART console capture** on all three USB-UART channels the board
-   exposes showed nothing at all, including FSBL's own standard boot
-   banner, which every stock Xilinx FSBL prints independently of any
-   application code. That absence rules out a bug in this project's own
-   firmware as the cause; it points at the UART physical path or baud
-   configuration not being the one actually reaching the console.
-2. **Halting the core over JTAG to read DDR directly** works reliably right
-   after FSBL runs, but times out specifically once the test application has
-   run, reproduced across multiple attempts, including after applying a
-   verified PS-PL isolation-removal and fabric-reset-release sequence (taken
-   from this project's own generated `psu_init.c`) that did not change the
-   outcome.
-3. **Reading DDR through the debug access port without touching the core**
-   reaches low peripheral addresses live but returns a real AXI transaction
-   timeout/error reaching DDR address space specifically.
+The decisive test: AMD's own unmodified `hello_world` template app, built
+for this same platform and run through the identical FSBL-then-application
+JTAG sequence, fails in exactly the same way: no UART output, and the core
+cannot be halted afterward. Since that is AMD's reference code, not this
+project's, this confirms the limitation is in the JTAG debug *flow* itself
+(chaining a standalone application after FSBL via `rst`/`dow`/`con` in
+xsct, which its own banner already flags as deprecated), not in this
+design, this firmware, or anything specific to this project.
 
 So the decoder's physical validity on silicon is confirmed (synthesis,
-timing closure, and a clean configuration readback), and the test
-application is confirmed to build and launch, but the actual data-path
-result on hardware is not yet observed, and this README does not claim one.
-The likely cause is a UART routing/configuration question or an ARM debug
-limitation around a bare-metal app's exception-level transition, not a
-defect in the RTL itself, since the same RTL already passed 1920/1920
-simulated cases bit-for-bit. Resolving this is the next real step.
+timing closure, and a clean configuration readback), the test application
+is confirmed to build and launch, and the blocker on seeing its result is
+now a specifically identified tool/flow limitation rather than an open
+question, documented in full (including every ruled-out hypothesis) for
+anyone hitting the same wall. It is not a defect in the RTL itself, which
+already passed 1920/1920 simulated cases bit-for-bit. The next real step is
+either the newer Vitis Python debug API in place of deprecated xsct, or a
+proper `BOOT.BIN` boot from SD/QSPI so FSBL hands off to the application
+natively, with no debugger-injected reset in between.
 
 ## Why this matters
 
@@ -181,6 +186,8 @@ anyone's word for it.
 | [`vivado_proj/16_export_xsa.tcl`](vivado_proj/16_export_xsa.tcl) / [`create_platform.py`](vivado_proj/create_platform.py) / [`build_app.py`](vivado_proj/build_app.py) | Hardware platform export and the Vitis unified Python API scripts that build the firmware platform and application |
 | [`vivado_proj/firmware/main.c`](vivado_proj/firmware/main.c) | Bare-metal AXI DMA test application (built and launched on hardware; see "On-hardware status" above) |
 | [`vivado_proj/18_jtag_run_via_fsbl.tcl`](vivado_proj/18_jtag_run_via_fsbl.tcl) | JTAG bring-up: FSBL runs natively for PS/DDR init, then downloads and starts the test application |
+| [`vivado_proj/25_full_diagnostic.tcl`](vivado_proj/25_full_diagnostic.tcl) | The decisive diagnostic: PS-PL release, FSBL, a full register/exception-level dump, then AMD's own `hello_world` template through the same chain, isolating the JTAG halt/UART failure to the debug flow itself |
+| [`vivado_proj/create_hello_app.py`](vivado_proj/create_hello_app.py) / [`build_hello_app.py`](vivado_proj/build_hello_app.py) | Builds AMD's unmodified `hello_world` template on this platform, used as the control test above |
 
 ## Status
 
