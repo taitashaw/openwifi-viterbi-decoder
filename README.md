@@ -44,11 +44,20 @@ S2MM out), so it carries zero raw top-level data pins, that matters, see
   endpoints out of 25,475. All constraints met.
 
 ![Block design](docs/images/block_design.webp)
-*PS + AXI DMA + `viterbi_k7_axis`, implemented and routed.*
+*PS + AXI SmartConnects + AXI DMA + `viterbi_k7_axis_0`, as implemented.*
 
 ![Waveform, full signal set](docs/images/waveform_overview.webp)
 *AXI-Stream in/out, the adapter-to-core symbol signals, and both internal
 state machines, from a live run of the full 920-case regression.*
+
+![Waveform, one frame in detail](docs/images/waveform_frame_handshake_1.webp)
+*A single frame's handshake zoomed in: `sym0`/`sym1`/`erase` arriving while
+`input_valid` pulses, the core's `cur_state` moving IDLE &#8594; RECEIVE, and the
+output adapter's own `cur_state` moving IDLE &#8594; STREAM &#8594; IDLE as it drains.*
+
+![Waveform, a later frame, same pattern](docs/images/waveform_frame_handshake_2.webp)
+*The same handshake shape recurring at frame 426/427, roughly 1000 frames
+later in the run, not a one-off.*
 
 ![Waveform, decoded output](docs/images/waveform_decoded_output.webp)
 *`decoded_bits`/`decode_len` on `decode_done`, cross-checked: `decode_len =
