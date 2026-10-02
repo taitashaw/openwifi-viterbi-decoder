@@ -101,19 +101,52 @@ found.
 
 Being specific about the gap is part of the point:
 
-- The bitstream has been generated and programmed onto a real ZCU104 over
-  JTAG (`xczu7_0`), confirmed by a post-configuration hardware readback, not
-  just a successful command. That proves the implementation is physically
-  valid on real silicon. It does not yet prove the decoder processes real
-  data correctly on that hardware: there is no bare-metal application driving
-  the AXI DMA, so no test frame has actually been pushed through the design
-  on the board. That is real, separate work, not a leftover step.
 - No side-by-side resource or timing comparison against Xilinx's own
   `viterbi_v7_0` LogiCORE exists, it isn't licensed in this environment. The
   interface (`sym0`/`sym1`/`erase`) matches it and openofdm's production RTL
   by design, so the comparison is at least well-posed, but it hasn't been run.
 - The erasure mechanism is generic and verified, but no specific 802.11
   puncture pattern (rate 2/3, 3/4) is wired up yet.
+
+## On-hardware status: programmed and running, readout not yet confirmed
+
+The bitstream has been generated and programmed onto a real ZCU104 over JTAG
+(`xczu7_0`), confirmed by a post-configuration hardware readback, not just a
+successful command. A bare-metal AXI DMA test application
+([`main.c`](vivado_proj/firmware/main.c)) was written, built with the
+real Vitis 2025.2 unified toolchain, and launched on the APU over JTAG: the
+FSBL runs natively to bring up PS/DDR, then the test application downloads
+and starts cleanly, with no error from the download or run commands
+themselves.
+
+What is not yet confirmed is the PASS/FAIL result of that run. Three
+independent ways to read it back were tried and each hit a distinct, real
+failure:
+
+1. **UART console capture** on all three USB-UART channels the board
+   exposes showed nothing at all, including FSBL's own standard boot
+   banner, which every stock Xilinx FSBL prints independently of any
+   application code. That absence rules out a bug in this project's own
+   firmware as the cause; it points at the UART physical path or baud
+   configuration not being the one actually reaching the console.
+2. **Halting the core over JTAG to read DDR directly** works reliably right
+   after FSBL runs, but times out specifically once the test application has
+   run, reproduced across multiple attempts, including after applying a
+   verified PS-PL isolation-removal and fabric-reset-release sequence (taken
+   from this project's own generated `psu_init.c`) that did not change the
+   outcome.
+3. **Reading DDR through the debug access port without touching the core**
+   reaches low peripheral addresses live but returns a real AXI transaction
+   timeout/error reaching DDR address space specifically.
+
+So the decoder's physical validity on silicon is confirmed (synthesis,
+timing closure, and a clean configuration readback), and the test
+application is confirmed to build and launch, but the actual data-path
+result on hardware is not yet observed, and this README does not claim one.
+The likely cause is a UART routing/configuration question or an ARM debug
+limitation around a bare-metal app's exception-level transition, not a
+defect in the RTL itself, since the same RTL already passed 1920/1920
+simulated cases bit-for-bit. Resolving this is the next real step.
 
 ## Why this matters
 
@@ -144,8 +177,15 @@ anyone's word for it.
 | [`vhdl/tb_viterbi_axis.vhd`](vhdl/tb_viterbi_axis.vhd) | AXI-Stream testbench with randomized stalls on both sides |
 | [`vivado_proj/07_block_design_axis.tcl`](vivado_proj/07_block_design_axis.tcl) | Block design: PS + AXI DMA + custom IP |
 | [`vivado_proj/09_impl_axis.tcl`](vivado_proj/09_impl_axis.tcl) / [`10_impl_axis_retry.tcl`](vivado_proj/10_impl_axis_retry.tcl) | Synthesis/implementation, including the retry that closed the final timing gap |
+| [`vivado_proj/13_write_bitstream.tcl`](vivado_proj/13_write_bitstream.tcl) / [`14_check_hw.tcl`](vivado_proj/14_check_hw.tcl) / [`15_program_board.tcl`](vivado_proj/15_program_board.tcl) | Bitstream generation, live hardware connectivity check, and JTAG programming |
+| [`vivado_proj/16_export_xsa.tcl`](vivado_proj/16_export_xsa.tcl) / [`create_platform.py`](vivado_proj/create_platform.py) / [`build_app.py`](vivado_proj/build_app.py) | Hardware platform export and the Vitis unified Python API scripts that build the firmware platform and application |
+| [`vivado_proj/firmware/main.c`](vivado_proj/firmware/main.c) | Bare-metal AXI DMA test application (built and launched on hardware; see "On-hardware status" above) |
+| [`vivado_proj/18_jtag_run_via_fsbl.tcl`](vivado_proj/18_jtag_run_via_fsbl.tcl) | JTAG bring-up: FSBL runs natively for PS/DDR init, then downloads and starts the test application |
 
 ## Status
 
-Simulation and implementation complete and passing. Bitstream generation and
-on-hardware validation are the next real steps, not yet done.
+Simulation, synthesis, and timing closure complete and passing. The
+bitstream is generated and programmed onto real hardware with a verified
+readback, and the bare-metal test application builds and launches cleanly
+over JTAG. The on-hardware data-path result itself is not yet confirmed; see
+"On-hardware status" above for exactly what was tried and what remains.
