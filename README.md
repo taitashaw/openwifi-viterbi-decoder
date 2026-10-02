@@ -101,8 +101,13 @@ found.
 
 Being specific about the gap is part of the point:
 
-- No bitstream has been generated yet, and no on-hardware bring-up has been
-  done. Everything above is simulation plus Vivado synthesis/implementation.
+- The bitstream has been generated and programmed onto a real ZCU104 over
+  JTAG (`xczu7_0`), confirmed by a post-configuration hardware readback, not
+  just a successful command. That proves the implementation is physically
+  valid on real silicon. It does not yet prove the decoder processes real
+  data correctly on that hardware: there is no bare-metal application driving
+  the AXI DMA, so no test frame has actually been pushed through the design
+  on the board. That is real, separate work, not a leftover step.
 - No side-by-side resource or timing comparison against Xilinx's own
   `viterbi_v7_0` LogiCORE exists, it isn't licensed in this environment. The
   interface (`sym0`/`sym1`/`erase`) matches it and openofdm's production RTL
