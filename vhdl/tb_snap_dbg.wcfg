@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_snap_dbg.wdb" id="1">
+         <top_modules>
+            <top_module name="tb_viterbi_k7" />
+            <top_module name="viterbi_k7_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="340.001 ns"></ZoomEndTime>
+      <Cursor1Time time="28.315 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="257"></NameColumnWidth>
+      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="41" />
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/din">
+      <obj_property name="ElementShortName">din[1:0]</obj_property>
+      <obj_property name="ObjectShortName">din[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/frame_start">
+      <obj_property name="ElementShortName">frame_start</obj_property>
+      <obj_property name="ObjectShortName">frame_start</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/frame_end">
+      <obj_property name="ElementShortName">frame_end</obj_property>
+      <obj_property name="ObjectShortName">frame_end</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/decoded_bits">
+      <obj_property name="ElementShortName">decoded_bits[1503:0]</obj_property>
+      <obj_property name="ObjectShortName">decoded_bits[1503:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/decode_len">
+      <obj_property name="ElementShortName">decode_len</obj_property>
+      <obj_property name="ObjectShortName">decode_len</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/decode_done">
+      <obj_property name="ElementShortName">decode_done</obj_property>
+      <obj_property name="ObjectShortName">decode_done</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/busy">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/din">
+      <obj_property name="ElementShortName">din[1:0]</obj_property>
+      <obj_property name="ObjectShortName">din[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/din_accept">
+      <obj_property name="ElementShortName">din_accept</obj_property>
+      <obj_property name="ObjectShortName">din_accept</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/frame_start">
+      <obj_property name="ElementShortName">frame_start</obj_property>
+      <obj_property name="ObjectShortName">frame_start</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/frame_end">
+      <obj_property name="ElementShortName">frame_end</obj_property>
+      <obj_property name="ObjectShortName">frame_end</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/decoded_bits">
+      <obj_property name="ElementShortName">decoded_bits[1503:0]</obj_property>
+      <obj_property name="ObjectShortName">decoded_bits[1503:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/decode_len">
+      <obj_property name="ElementShortName">decode_len</obj_property>
+      <obj_property name="ObjectShortName">decode_len</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/decode_done">
+      <obj_property name="ElementShortName">decode_done</obj_property>
+      <obj_property name="ObjectShortName">decode_done</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/busy">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/sim_running">
+      <obj_property name="ElementShortName">sim_running</obj_property>
+      <obj_property name="ObjectShortName">sim_running</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/MAX_LEN">
+      <obj_property name="ElementShortName">MAX_LEN</obj_property>
+      <obj_property name="ObjectShortName">MAX_LEN</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/CLK_PERIOD">
+      <obj_property name="ElementShortName">CLK_PERIOD</obj_property>
+      <obj_property name="ObjectShortName">CLK_PERIOD</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/MAX_STR">
+      <obj_property name="ElementShortName">MAX_STR</obj_property>
+      <obj_property name="ObjectShortName">MAX_STR</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/dut/input">
+      <obj_property name="ElementShortName">input[1:0]</obj_property>
+      <obj_property name="ObjectShortName">input[1:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/input_valid">
+      <obj_property name="ElementShortName">input_valid</obj_property>
+      <obj_property name="ObjectShortName">input_valid</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/input_accept">
+      <obj_property name="ElementShortName">input_accept</obj_property>
+      <obj_property name="ObjectShortName">input_accept</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/frame_start">
+      <obj_property name="ElementShortName">frame_start</obj_property>
+      <obj_property name="ObjectShortName">frame_start</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/frame_end">
+      <obj_property name="ElementShortName">frame_end</obj_property>
+      <obj_property name="ObjectShortName">frame_end</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/dut/decoded_bits">
+      <obj_property name="ElementShortName">decoded_bits[1503:0]</obj_property>
+      <obj_property name="ObjectShortName">decoded_bits[1503:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/decode_len">
+      <obj_property name="ElementShortName">decode_len</obj_property>
+      <obj_property name="ObjectShortName">decode_len</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/decode_done">
+      <obj_property name="ElementShortName">decode_done</obj_property>
+      <obj_property name="ObjectShortName">decode_done</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_viterbi_k7/dut/busy">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/cur_state">
+      <obj_property name="ElementShortName">cur_state</obj_property>
+      <obj_property name="ObjectShortName">cur_state</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/dut/path_metric">
+      <obj_property name="ElementShortName">path_metric[0:63][15:0]</obj_property>
+      <obj_property name="ObjectShortName">path_metric[0:63][15:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/time_idx">
+      <obj_property name="ElementShortName">time_idx</obj_property>
+      <obj_property name="ObjectShortName">time_idx</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/frame_len_r">
+      <obj_property name="ElementShortName">frame_len_r</obj_property>
+      <obj_property name="ObjectShortName">frame_len_r</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/tb_idx">
+      <obj_property name="ElementShortName">tb_idx</obj_property>
+      <obj_property name="ObjectShortName">tb_idx</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/tb_state">
+      <obj_property name="ElementShortName">tb_state</obj_property>
+      <obj_property name="ObjectShortName">tb_state</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/dut/decoded_reg">
+      <obj_property name="ElementShortName">decoded_reg[1503:0]</obj_property>
+      <obj_property name="ObjectShortName">decoded_reg[1503:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_viterbi_k7/dut/MAX_FRAME_LEN">
+      <obj_property name="ElementShortName">MAX_FRAME_LEN</obj_property>
+      <obj_property name="ObjectShortName">MAX_FRAME_LEN</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_viterbi_k7/dut/PM_MAX">
+      <obj_property name="ElementShortName">PM_MAX[15:0]</obj_property>
+      <obj_property name="ObjectShortName">PM_MAX[15:0]</obj_property>
+   </wvobject>
+</wave_config>

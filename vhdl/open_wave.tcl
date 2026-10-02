@@ -1,0 +1,11 @@
+add_wave /tb_viterbi_k7/clk
+add_wave /tb_viterbi_k7/rst
+add_wave /tb_viterbi_k7/din
+add_wave /tb_viterbi_k7/din_valid
+add_wave /tb_viterbi_k7/frame_start
+add_wave /tb_viterbi_k7/frame_end
+add_wave /tb_viterbi_k7/decoded_bits
+add_wave /tb_viterbi_k7/decode_len
+add_wave /tb_viterbi_k7/decode_done
+add_wave /tb_viterbi_k7/busy
+run all
