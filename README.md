@@ -44,24 +44,63 @@ S2MM out), so it carries zero raw top-level data pins, that matters, see
   endpoints out of 25,475. All constraints met.
 
 ![Block design](docs/images/block_design.webp)
-*PS + AXI SmartConnects + AXI DMA + `viterbi_k7_axis_0`, as implemented.*
+*The implemented block design. The PS (`zynq_ultra_ps_e_0`) only ever talks
+to `viterbi_k7_axis_0` through `axi_dma_0`: the DMA's control port is driven
+over AXI-Lite through the PS's legacy AXI Interconnect (labeled
+"Discontinued" by Xilinx, meaning superseded by newer IP, not broken, it's
+kept here because it still works and is still common in real designs), its
+MM2S channel streams into the core's `s_axis` input, and its S2MM channel
+streams the decoded output back in from the core's `m_axis`. The DMA's two
+memory-mapped masters each get their own AXI SmartConnect into a separate PS
+high-performance port (`S_AXI_HP0_FPD` / `S_AXI_HP1_FPD`), this is defect 7
+below made visible: two masters sharing one port had silently created a
+second, disconnected SmartConnect, and here they're on two distinct paths
+instead. `rst_ps8_0_100M` fans synchronized resets out to every block, and
+`irq_concat` combines the DMA's two completion interrupts into the one
+`pl_ps_irq0` line back to the PS.*
 
 ![Waveform, full signal set](docs/images/waveform_overview.webp)
-*AXI-Stream in/out, the adapter-to-core symbol signals, and both internal
-state machines, from a live run of the full 920-case regression.*
+*A live simulation run covering the full 920-case regression (`rx_frame_count`
+reaches 920 in the testbench's own scope, top of the signal list). Two
+internal state machines are visible side by side: the decoder core's
+`cur_state` (caught here mid-frame in `RECEIVE`) and the output adapter's
+separate `cur_state` cycling `IDLE` &#8594; `STREAM` as each decoded frame
+drains back out independently of the next frame being received. `decode_len`
+steps through more than one value over the course of the run, for example
+0x64, 0x1f4, and 0x5dc (100, 500, and 1500 bits), and the derived
+`num_bytes` tracks it correctly every time (13, 63, and 188 bytes, each
+exactly `ceil(decode_len/8)`), confirming the regression exercises multiple
+frame lengths rather than one length repeated 920 times. The dense solid
+green bands on `tvalid`/`tready` are the randomized per-cycle stalls that
+`tb_viterbi_axis.vhd` applies on both sides of the stream, not idle padding,
+the core is being tested against a deliberately uncooperative bus.*
 
 ![Waveform, one frame in detail](docs/images/waveform_frame_handshake_1.webp)
-*A single frame's handshake zoomed in: `sym0`/`sym1`/`erase` arriving while
-`input_valid` pulses, the core's `cur_state` moving IDLE &#8594; RECEIVE, and the
-output adapter's own `cur_state` moving IDLE &#8594; STREAM &#8594; IDLE as it drains.*
+*One frame's handshake zoomed in to individual clock edges, caught at frame
+546 of the run (`rx_frame_count` ticks 545 &#8594; 546). `sym0`/`sym1`/`erase`
+arrive while `input_valid` pulses, the decoder core's `cur_state` moves
+`IDLE` &#8594; `RECEIVE` as it accepts them, and the output adapter's own
+`cur_state` moves `IDLE` &#8594; `STREAM` &#8594; `IDLE` as it drains the
+previous frame's decoded bytes out through `m_axis_tdata` while this new
+frame's input is still arriving, proof the two sides run independently
+instead of blocking each other.*
 
 ![Waveform, a later frame, same pattern](docs/images/waveform_frame_handshake_2.webp)
-*The same handshake shape recurring at frame 426/427, roughly 1000 frames
-later in the run, not a one-off.*
+*The identical handshake shape recurring earlier in the same run, at frame
+427 (`rx_frame_count` ticks 426 &#8594; 427, confirmed by the simulation
+timestamp sitting well before the frame 546 capture above). Same
+IDLE/RECEIVE and IDLE/STREAM/IDLE pattern, on a frame more than a hundred
+apart from the one above, this is the decoder's steady-state behavior, not
+something specific to one lucky frame.*
 
 ![Waveform, decoded output](docs/images/waveform_decoded_output.webp)
-*`decoded_bits`/`decode_len` on `decode_done`, cross-checked: `decode_len =
-0x1f4` (500) and `num_bytes = 63 = ceil(500/8)` agree.*
+*Decoded output near the end of the run, at frame 897 of 920
+(`rx_frame_count` ticks 896 &#8594; 897). `decoded_bits` is holding real,
+non-zero decoded data, visible as the long hex string rather than an
+all-zero placeholder, for this frame `decode_len = 0x1f4` (500 bits) and the
+adapter's own `num_bytes = 63` agrees with `ceil(500/8) = 63`, the same
+cross-check the overview image shows in aggregate, caught here holding on
+one specific frame near the very end of the full regression.*
 
 ## Real defects found and fixed
 
